@@ -21,11 +21,22 @@ import re
 with open('text.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
-
 # 2. Делим текст на предложения
 sen = re.split('[!?\.]\s', text)
+print('Вывод списка предложений в тексте:')
 print(sen)
 
-
 # 3. Найдем слова с 4 и более буквами
-
+word4 = re.findall("\w{4,}", text)
+word_dict = {}
+# Посчитаем количество их повторений
+for word in word4:
+    word_dict[word] = word4.count(word)
+print('Слова с четырьмя или более буквами с указанием их количества в тексте:')
+print(word_dict)
+list_word_dict = list(word_dict.items())
+# Отсортируем их по числу повторений по убыванию
+list_word_dict.sort(key=lambda i: i[1], reverse=True)
+print('Вывод 10 самых часто встречающихся слов:')
+for i in range(10):
+    print(list_word_dict[i])
