@@ -40,3 +40,23 @@ list_word_dict.sort(key=lambda i: i[1], reverse=True)
 print('Вывод 10 самых часто встречающихся слов:')
 for i in range(10):
     print(list_word_dict[i])
+
+# 4. Найдем все ссылки
+link = re.compile('(\w+\.\w+\.\w+/\w+|\w+\.\w+/\w+|\w+\.\w+)\.')
+print(link.findall(text))
+
+# 5. Найдем часто встречающиеся домены
+domains = re.findall('(\w+\.\w+|\w+\.\w+\.\w+)/',text)
+domain_dict = {}
+# Посчитаем количество их повторений
+for domain in domains:
+    domain_dict[domain] = domains.count(domain)
+print(domain_dict)
+list_domain_dict = list(domain_dict.items())
+list_domain_dict.sort(key=lambda i: i[1], reverse=True)
+# Вывод самого часто встречающегося домена
+print(f'Самый часто встречающийся домен в тексте{list_domain_dict[0]}')
+
+# 6. Замена всех ссылок на текст «Ссылка отобразится после регистрации».
+text = link.sub('«Ссылка отобразится после регистрации»',text)
+print(text)
