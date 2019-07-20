@@ -11,10 +11,29 @@ import re
 import bs4
 from wiki_requests import get_topic_page
 
-def get_topic_text(topic):
+
+def get_topic_words(topic):
     html_content = get_topic_page(topic)
-    words = re.findall('[а-яА-Я]+', html_content)
+    words = re.findall("[а-яА-Я\-']{3,}", html_content)
     return words
 
-print(get_topic_text('Россия'))
 
+def get_common_words(topic):
+    words_list = get_topic_words(topic)
+    rate = {}
+    for word in words_list:
+        if word in rate:
+            rate[word] += 1
+        else:
+            rate[word] = 1
+    rate_list = list(rate.items())
+    rate_list.sort(key=lambda x: -x[1])
+    return rate_list
+
+
+def visualize_common_words(topic):
+    words = get_common_words(topic)
+    for w in words[1:100]:
+        print(w[0])
+topic = input('Topic: ')
+print(visualize_common_words(topic))
