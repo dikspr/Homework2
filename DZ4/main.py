@@ -8,18 +8,30 @@
 
 
 import re
-import bs4
-from wiki_requests import get_topic_page
+from bs4 import BeautifulSoup as BS
+from wiki_requests import get_topic_page, get_start_link, get_link
 
 
-def get_topic_words(topic):
-    html_content = get_topic_page(topic)
+# Функция, которая получает список ссылок на соседние страницы
+def get_wiki_links(link):
+    html_content = get_topic_page(link)
+    soup = BS(html_content, 'html.parser')
+    links = soup.find_all("a")
+    links = [link.get('href', '') for link in links]
+    links = [link for link in links if re.search('/wiki/', link) and not re.search('./wiki/', link)]
+    return links
+
+
+# Функция, которая получает список из текста страицы
+def get_topic_words(link):
+    html_content = get_topic_page(link)
     words = re.findall("[а-яА-Я\-']{3,}", html_content)
     return words
 
 
-def get_common_words(topic):
-    words_list = get_topic_words(topic)
+# Функция, которая сортирует список слов из текста на странице по количеству повторений
+def get_common_words(link):
+    words_list = get_topic_words(link)
     rate = {}
     for word in words_list:
         if word in rate:
@@ -31,9 +43,15 @@ def get_common_words(topic):
     return rate_list
 
 
-def visualize_common_words(topic):
-    words = get_common_words(topic)
-    for w in words[1:100]:
+def visualize_common_words(link):
+    words = get_common_words(link)
+    for w in words[1:10]:
         print(w[0])
+
+
 topic = input('Topic: ')
-print(visualize_common_words(topic))
+links = []
+links.append(get_start_link(topic))
+for wiki_link in get_wiki_links(get_start_link(topic)):
+    links.append(get_link(wiki_link))
+print(links)
