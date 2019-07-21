@@ -30,8 +30,7 @@ def get_topic_words(link):
 
 
 # Функция, которая сортирует список слов из текста на странице по количеству повторений
-def get_common_words(link):
-    words_list = get_topic_words(link)
+def get_common_words(words_list):
     rate = {}
     for word in words_list:
         if word in rate:
@@ -43,15 +42,29 @@ def get_common_words(link):
     return rate_list
 
 
-def visualize_common_words(link):
-    words = get_common_words(link)
-    for w in words[1:10]:
+# Функция выводит на экран наиболее часто повторяющихся слов в списке
+def visualize_common_words(words_list):
+    words = get_common_words(words_list)
+    for w in words[20:30]:
         print(w[0])
 
 
+# Запрашиваем название топика.
 topic = input('Topic: ')
+# Создаем пустой список ссылок и добавляем в него ссылку на страницу основного топика
 links = []
 links.append(get_start_link(topic))
+# Заполняем список ссылками на дочерние страницы
 for wiki_link in get_wiki_links(get_start_link(topic)):
     links.append(get_link(wiki_link))
-print(links)
+# Создаем список слов из текстов страниц и заполняем его
+# (что бы не было скучно ждать, выводится число слов в списке после добавления новой страницы)
+pages_words = []
+i = 1
+for wiki_link in links:
+    pages_words.extend(get_topic_words(wiki_link))
+    len_list = len(pages_words)
+    print(f'Найдено {len_list} слов на {i} страницах из {len(links)}')
+    i += 1
+# Отображаем результат
+visualize_common_words(pages_words)
