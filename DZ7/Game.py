@@ -14,8 +14,7 @@ class Game:
         self.player = Player()
         self.hamsters = []
         for i in range(hamsters_count):
-            self.hamsters.append(Hamster(i+1, self.get_full_map()))
-
+            self.hamsters.append(Hamster(i + 1, self.get_full_map(True)))
 
     def add_point(self, position, name, s):
         li = s.split('\n')
@@ -32,7 +31,6 @@ class Game:
                 s = self.add_point(h.position, str(h.id), s)
 
         print(s)
-
 
     def move_player(self, destination):
         """ destination = w,a,s,d """
@@ -54,18 +52,20 @@ class Game:
             self.player.position[0] += 1  # right
         self.on_move(destination)
 
-    def get_full_map(self):
+    def get_full_map(self, start_game = False):
         s = self.map
+        if start_game:
+            s = self.add_point(self.player.position, 'x', s)  # Попытка исправить ошибку с рождением игрока и хомяка в одной точке.
         for h in self.hamsters:
             s = self.add_point(h.position, str(h.id), s)
         return s
 
     def get_hamster_on_position(self, coords):
         s = self.get_full_map()
-
         return s.split('\n')[coords[1]][coords[0]]
 
     directions = {'w': 's', 's': 'w', 'a': 'd', 'd': 'a'}
+
     def on_move(self, direction):
         hamster = self.get_hamster_on_position(self.player.position)
         if not hamster == '*':
@@ -97,15 +97,21 @@ class Game:
             if command == 'e':
                 self.player.wait()
             if command == 'q':
+                print('Game over')
                 self.gameon = False
 
 
 game = Game()
 game.start()
 
+# 1. Для исправления ошибки с рождением игрока и хомяка в одной точке надо в метод get_full_map
+# надо перед циклом с добавлением хомяков добавить строку с добавлением игрока
+# (s = self.add_point(self.player.position, 'x', s).  И сделать проверку первой генерации карты до старта игры.
+# Тогда расчет позици нового хомяка будет учитывать и местоположение игрока на карте.
 # 2. Нормальную обработку границ карты мы сделали, когда делали метод перемещения по карте. Ошибки нет.
 # 3. Для исправления ошибки с концовкой в классе Game ввел свойство hamsters_count_now,
 # которое показывает текущее количество хомяков.
 # В методе on_move, когда хомяк умирает, это свойство уменьшается на 1.
 # В методе start в начале цикла проверяем не количество хомяков в списке hamsters, которое у нас в игре не меняется,
 # а свойство hamsters_count_now.
+# 4. Добавил вывод Game over по окончании игры с помощью команды q.
