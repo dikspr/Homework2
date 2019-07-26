@@ -22,9 +22,9 @@ class Game:
     def render_map(self):
         s = self.map
         s = self.add_point(self.player.position, 'x', s)
-
         for h in self.hamsters:
-            s = self.add_point(h.position, str(h.id), s)
+            if h.health > 0:
+                s = self.add_point(h.position, str(h.id), s)
         print(s)
 
     def move_player(self, destination):
@@ -47,8 +47,16 @@ class Game:
             self.player.position[0] += 1  # right
         self.on_move()
 
+    def get_hamster_on_position(self, coords):
+        s = self.map
+        for h in self.hamsters:
+            s = self.add_point(h.position, str(h.id), s)
+        return s.split('\n')[coords[1]][coords[0]]
+
     def on_move(self):
-        print(self.player.position)
+        hamster = self.get_hamster_on_position(self.player.position)
+        if not hamster == '*':
+            self.hamsters[int(hamster) - 1].on_shot()
     def start(self):
         game.render_map()
         while True:
